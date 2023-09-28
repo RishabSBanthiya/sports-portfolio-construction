@@ -17,7 +17,7 @@ import csv
 pair_arrays = []
 
 # Open the CSV file for reading
-with open('book4CSV.csv', 'r') as csvfile:
+with open('Sep29.csv', 'r') as csvfile:
     reader = csv.reader(csvfile)
     
     # Skip the header row if present

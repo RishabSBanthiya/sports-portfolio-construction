@@ -1,4 +1,4 @@
-import scipy.optimize as optimize
+ import scipy.optimize as optimize
 import math 
 
 # Initial weights (TODO: Look into how to improve initial guess)
@@ -38,7 +38,7 @@ def squared(s):
     return s * s
 
 def calc_sd_sqaured_plus_weights_squared(s, w):
-    return s + w
+    return s * w
 
 def calc_cov(sd1, w1, sd2, w2):
     return sd1 * w1 * sd2 * w2 * - 0.3
@@ -74,13 +74,13 @@ def objective(vars):
     sd =  [[ calc_sd(l,p,m) for l, p, m in zip(sublist1, sublist2, sublist3)] for sublist1, sublist2, sublist3 in zip(ep, el, mean)]
     sd_sqared = [[squared(x) for x in sublist] for sublist in sd]
     weight_squared = [[squared(x) for x in sublist] for sublist in weights]
-    sd_sqaured_plus_weights_squared= [[ s + w for s, w in zip(sublist1, sublist2)] for sublist1, sublist2 in zip(sd_sqared, weight_squared)]
+    sd_sqaured_plus_weights_squared= [[calc_sd_sqaured_plus_weights_squared(s,w) for s, w in zip(sublist1, sublist2)] for sublist1, sublist2 in zip(sd_sqared, weight_squared)]
     cov = []
     for i in range(0, len(sd) - 1):
         for j in range(i+1, len(sd)):
             cov.append(calc_cov_helper(sd[i], weights[i], sd[j], weights[j]))
     portfolio_ep = sum_nestedlist(mean)
-    portfolio_sd = sum_nestedlist(sd_sqaured_plus_weights_squared) + sum_nestedlist(cov)
+    portfolio_sd = math.sqrt(sum_nestedlist(sd_sqaured_plus_weights_squared) + sum_nestedlist(cov))
     return (portfolio_sd)
 
 result = optimize.minimize(objective, guess, bounds=bounds, constraints=equality_constraint)
